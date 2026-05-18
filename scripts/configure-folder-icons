@@ -211,7 +211,7 @@ icon_targets=(
   "inbox|folder-download,folder|$home/data/inbox"
   "personal|folder-user,folder-private,folder-documents,folder|$home/data/personal"
   "work|folder-work,folder-documents,folder|$home/data/work"
-  "community|folder-publicshare,folder-globe,folder|$home/data/community"
+  "community|folder-globe,folder-earth,folder-publicshare,folder|$home/data/community"
   "media|folder-camera,folder-pictures,folder|$home/data/media"
   "library|folder-books,folder-documents,folder|$home/data/library"
   "technology|folder-shell,folder-code,folder-git,folder|$home/data/technology"

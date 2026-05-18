@@ -40,6 +40,9 @@ The root `~/data` intentionally uses the plain `folder` icon from the active
 theme. It should remain visually neutral because it is a container for all
 domains, not a domain by itself.
 
+`~/data/community` uses the globe folder icon when available. This keeps it
+distinct from `~/data/shared`, which uses the public-share folder icon.
+
 ## Commands
 
 Preview:
