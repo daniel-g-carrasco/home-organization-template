@@ -52,6 +52,9 @@ Technology subfolders avoid `folder-cloud` and `folder-docker` as first choices
 because those names can resolve to blue MoreWaita folders in some theme stacks.
 Yellow theme-consistent alternatives are preferred instead.
 
+Inbox review folders avoid `folder-recent` for the same reason. `folder-drag-accept`
+keeps the review/incoming meaning while staying in the yellow theme family.
+
 ## Commands
 
 Preview:

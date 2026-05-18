@@ -224,7 +224,7 @@ icon_targets=(
   "development|folder-code,folder-git,folder|$home/dev"
   "scratch|folder-temp,folder|$home/scratch"
 
-  "inbox-review|folder-recent,folder-documents,folder|$home/data/inbox/00-review"
+  "inbox-review|folder-drag-accept,folder-documents,folder|$home/data/inbox/00-review"
   "inbox-downloads|folder-download,folder|$home/data/inbox/10-downloads"
   "inbox-scans|folder-documents,folder|$home/data/inbox/20-scans"
   "inbox-mobile-imports|folder-android,folder-download,folder|$home/data/inbox/30-mobile-imports"
