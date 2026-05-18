@@ -8,7 +8,7 @@ This is useful when a structured home layout has important roots such as
 
 `scripts/configure-folder-icons` does not generate artwork. It resolves existing
 `folder-*` icons from the active icon theme, then from inherited themes and
-fallback themes such as `MoreWaita` and `Adwaita`.
+fallback themes such as `Adwaita-yellow`, `MoreWaita`, and `Adwaita`.
 
 It assigns the resolved icon files with:
 
@@ -47,6 +47,10 @@ same folder style as the rest of the theme.
 
 `~/data/community` uses the globe folder icon when available. This keeps it
 distinct from `~/data/shared`, which uses the public-share folder icon.
+
+Technology subfolders avoid `folder-cloud` and `folder-docker` as first choices
+because those names can resolve to blue MoreWaita folders in some theme stacks.
+Yellow theme-consistent alternatives are preferred instead.
 
 ## Commands
 

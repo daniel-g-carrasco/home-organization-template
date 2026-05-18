@@ -116,6 +116,7 @@ add_theme_tree() {
 
 active_theme="$(current_icon_theme)"
 add_theme_tree "$active_theme"
+add_theme_tree "Adwaita-yellow"
 add_theme_tree "MoreWaita"
 add_theme_tree "Adwaita"
 add_theme_tree "AdwaitaLegacy"
@@ -254,9 +255,9 @@ icon_targets=(
 
   "technology-admin|folder-documents,folder-private,folder|$home/data/technology/00-admin"
   "technology-devices|folder-android,folder|$home/data/technology/10-devices"
-  "technology-network|folder-cloud,folder|$home/data/technology/20-network"
-  "technology-servers|folder-docker,folder-cloud,folder|$home/data/technology/30-servers"
-  "technology-services|folder-cloud,folder|$home/data/technology/40-services"
+  "technology-network|folder-remote,folder-cloud,folder|$home/data/technology/20-network"
+  "technology-servers|folder-shell,folder-code,folder|$home/data/technology/30-servers"
+  "technology-services|folder-nextcloud,folder-syncthing,folder-remote,folder|$home/data/technology/40-services"
   "technology-reference|folder-books,folder-documents,folder|$home/data/technology/50-reference"
   "technology-archive|folder-backup,folder|$home/data/technology/90-archive"
 
