@@ -214,7 +214,7 @@ icon_targets=(
   "community|folder-publicshare,folder-globe,folder|$home/data/community"
   "media|folder-camera,folder-pictures,folder|$home/data/media"
   "library|folder-books,folder-documents,folder|$home/data/library"
-  "technology|folder-gnome,folder-code,folder-git,folder|$home/data/technology"
+  "technology|folder-shell,folder-code,folder-git,folder|$home/data/technology"
   "projects|folder-projects,folder|$home/data/projects"
   "shared|folder-publicshare,folder|$home/data/shared"
   "archive|folder-backup,folder|$home/data/archive"
