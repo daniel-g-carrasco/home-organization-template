@@ -36,6 +36,10 @@ The script covers:
 ~/scratch
 ```
 
+The root `~/data` intentionally uses the plain `folder` icon from the active
+theme. It should remain visually neutral because it is a container for all
+domains, not a domain by itself.
+
 ## Commands
 
 Preview:
