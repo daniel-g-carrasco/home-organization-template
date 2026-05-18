@@ -207,7 +207,7 @@ clear_icon() {
 }
 
 icon_targets=(
-  "data|folder-documents,folder|$home/data"
+  "data|folder-earth,folder-globe,folder-documents,folder|$home/data"
   "inbox|folder-download,folder|$home/data/inbox"
   "personal|folder-user,folder-private,folder-documents,folder|$home/data/personal"
   "work|folder-work,folder-documents,folder|$home/data/work"
@@ -222,6 +222,52 @@ icon_targets=(
   "templates|folder-templates,folder|$home/data/templates"
   "development|folder-code,folder-git,folder|$home/dev"
   "scratch|folder-temp,folder|$home/scratch"
+
+  "inbox-review|folder-recent,folder-documents,folder|$home/data/inbox/00-review"
+  "inbox-downloads|folder-download,folder|$home/data/inbox/10-downloads"
+  "inbox-scans|folder-documents,folder|$home/data/inbox/20-scans"
+  "inbox-mobile-imports|folder-android,folder-download,folder|$home/data/inbox/30-mobile-imports"
+  "inbox-conflicts|folder-temp,folder|$home/data/inbox/99-migration-conflicts"
+
+  "personal-admin|folder-documents,folder-private,folder|$home/data/personal/admin"
+  "personal-finance|folder-money,folder-documents,folder|$home/data/personal/finance"
+  "personal-health-fitness|folder-user,folder|$home/data/personal/health-fitness"
+  "personal-people|folder-user,folder|$home/data/personal/people"
+  "personal-places|folder-earth,folder-globe,folder|$home/data/personal/places"
+  "personal-records|folder-private,folder-documents,folder|$home/data/personal/records"
+
+  "work-admin|folder-documents,folder|$home/data/work/admin"
+  "work-clients|folder-work,folder|$home/data/work/clients"
+  "work-projects|folder-projects,folder|$home/data/work/projects"
+  "work-reference|folder-books,folder-documents,folder|$home/data/work/reference"
+  "work-archive|folder-backup,folder|$home/data/work/archive"
+
+  "media-audio|folder-music,folder|$home/data/media/audio"
+  "media-photos|folder-pictures,folder|$home/data/media/photos"
+  "media-recordings|folder-music,folder|$home/data/media/recordings"
+  "media-video|folder-videos,folder|$home/data/media/video"
+
+  "library-books|folder-books,folder|$home/data/library/books"
+  "library-fonts|folder-documents,folder|$home/data/library/fonts"
+  "library-games|folder-games,folder|$home/data/library/games"
+  "library-software|folder-appimage,folder-flatpak,folder|$home/data/library/software"
+
+  "technology-admin|folder-documents,folder-private,folder|$home/data/technology/00-admin"
+  "technology-devices|folder-android,folder|$home/data/technology/10-devices"
+  "technology-network|folder-cloud,folder|$home/data/technology/20-network"
+  "technology-servers|folder-docker,folder-cloud,folder|$home/data/technology/30-servers"
+  "technology-services|folder-cloud,folder|$home/data/technology/40-services"
+  "technology-reference|folder-books,folder-documents,folder|$home/data/technology/50-reference"
+  "technology-archive|folder-backup,folder|$home/data/technology/90-archive"
+
+  "shared-outgoing|folder-publicshare,folder|$home/data/shared/10-outgoing"
+  "shared-published|folder-globe,folder-publicshare,folder|$home/data/shared/20-published"
+  "shared-archive|folder-backup,folder|$home/data/shared/90-archive"
+
+  "archive-education|folder-school,folder-books,folder|$home/data/archive/education"
+  "archive-family|folder-user,folder|$home/data/archive/family"
+  "archive-personal|folder-private,folder-user,folder|$home/data/archive/personal"
+  "archive-work|folder-work,folder|$home/data/archive/work"
 )
 
 printf 'Icon theme order: %s\n' "${themes[*]}"

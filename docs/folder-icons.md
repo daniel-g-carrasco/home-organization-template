@@ -36,9 +36,14 @@ The script covers:
 ~/scratch
 ```
 
-The root `~/data` intentionally uses the documents folder icon from the active
-theme. This gives it a visible symbol while keeping the folder yellow and
-neutral enough for a root container.
+It also covers stable second-level folders where the theme has a clear matching
+symbol: downloads, scans, finance, places, media types, books, games, software,
+technology subdomains, shared workflow folders, and archives. It intentionally
+does not assign icons to date/event folders or individual project folders.
+
+The root `~/data` intentionally uses the earth folder icon from the active
+theme. This gives the durable data root a visible symbol while keeping it in the
+same folder style as the rest of the theme.
 
 `~/data/community` uses the globe folder icon when available. This keeps it
 distinct from `~/data/shared`, which uses the public-share folder icon.
@@ -61,6 +66,19 @@ Apply with an explicit theme:
 
 ```bash
 scripts/configure-folder-icons --theme MoreWaita --apply
+```
+
+Inspect available folder icons from the active local theme:
+
+```bash
+find -L ~/.local/share/icons/Margine-Adwaita/scalable/places \
+  -maxdepth 1 -type f -name 'folder*.svg' -printf '%f\n' | sort
+```
+
+Check where a themed icon really comes from:
+
+```bash
+readlink -f ~/.local/share/icons/Margine-Adwaita/scalable/places/folder-earth.svg
 ```
 
 Clear custom icons:
