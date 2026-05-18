@@ -207,7 +207,7 @@ clear_icon() {
 }
 
 icon_targets=(
-  "data|folder|$home/data"
+  "data|folder-documents,folder|$home/data"
   "inbox|folder-download,folder|$home/data/inbox"
   "personal|folder-user,folder-private,folder-documents,folder|$home/data/personal"
   "work|folder-work,folder-documents,folder|$home/data/work"

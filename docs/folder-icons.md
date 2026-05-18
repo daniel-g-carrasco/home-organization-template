@@ -36,9 +36,9 @@ The script covers:
 ~/scratch
 ```
 
-The root `~/data` intentionally uses the plain `folder` icon from the active
-theme. It should remain visually neutral because it is a container for all
-domains, not a domain by itself.
+The root `~/data` intentionally uses the documents folder icon from the active
+theme. This gives it a visible symbol while keeping the folder yellow and
+neutral enough for a root container.
 
 `~/data/community` uses the globe folder icon when available. This keeps it
 distinct from `~/data/shared`, which uses the public-share folder icon.
