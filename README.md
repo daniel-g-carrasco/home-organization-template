@@ -33,6 +33,13 @@ Create the folder skeleton:
 scripts/bootstrap-layout
 ```
 
+Configure XDG user directories and file-manager bookmarks:
+
+```bash
+scripts/configure-xdg-user-dirs --apply
+nautilus -q
+```
+
 Preview folder guide files:
 
 ```bash
@@ -45,6 +52,12 @@ Install folder guide files:
 scripts/install-folder-readmes --apply
 ```
 
+Audit application configs for stale paths:
+
+```bash
+scripts/audit-application-paths
+```
+
 ## Repository Map
 
 - `docs/principles.md`: rules and tradeoffs behind the layout.
@@ -52,11 +65,17 @@ scripts/install-folder-readmes --apply
 - `docs/migration-workflow.md`: conservative migration process.
 - `docs/folder-guides.md`: local `00-readme.md` policy.
 - `docs/backup-policy.md`: backup and sync boundaries.
+- `docs/application-paths.md`: XDG, file-manager, browser, mail, media, and
+  app-specific path integration.
 - `policies/backup-exclude.example`: example exclusion file for backup tools.
 - `policies/naming.md`: naming conventions.
 - `templates/folder-readme.md`: template for folder-local guide files.
 - `scripts/bootstrap-layout`: creates the target skeleton.
 - `scripts/install-folder-readmes`: creates concise `00-readme.md` guides.
+- `scripts/configure-xdg-user-dirs`: points XDG user directories and GTK
+  bookmarks to the organized layout.
+- `scripts/audit-application-paths`: reports application config files that
+  still reference old home paths.
 
 ## Safety Rule
 

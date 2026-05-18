@@ -122,6 +122,13 @@ XDG_PUBLICSHARE_DIR  -> ~/data/shared
 Keep the desktop empty or minimal. A desktop folder should not become a storage
 system.
 
+Apply this mapping and refresh Nautilus/GTK bookmarks with:
+
+```bash
+scripts/configure-xdg-user-dirs --apply
+nautilus -q
+```
+
 ## Mobile Devices
 
 Use `scratch/mobile` for transient device exchange. Use `data/inbox` when a

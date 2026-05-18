@@ -1,0 +1,135 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+home="${HOME:?}"
+apply=0
+
+usage() {
+  printf 'Usage: %s [--home PATH] [--apply]\n' "$0"
+}
+
+while (($#)); do
+  case "$1" in
+    --home)
+      home="${2:?missing value for --home}"
+      shift 2
+      ;;
+    --apply)
+      apply=1
+      shift
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      printf 'Unknown argument: %s\n' "$1" >&2
+      usage >&2
+      exit 2
+      ;;
+  esac
+done
+
+config_dir="$home/.config"
+user_dirs="$config_dir/user-dirs.dirs"
+gtk3_bookmarks="$config_dir/gtk-3.0/bookmarks"
+gtk4_bookmarks="$config_dir/gtk-4.0/bookmarks"
+
+bookmark_lines=(
+  "file://$home/data/personal Documents"
+  "file://$home/data/inbox/10-downloads Downloads"
+  "file://$home/data/media/photos Pictures"
+  "file://$home/data/media/audio Music"
+  "file://$home/data/media/video Videos"
+  "file://$home/data/shared Shared"
+  "file://$home/data/projects Projects"
+  "file://$home/dev Development"
+  "file://$home/scratch Scratch"
+)
+
+required_dirs=(
+  "$home/data/inbox/10-downloads"
+  "$home/data/templates"
+  "$home/data/shared"
+  "$home/data/personal"
+  "$home/data/media/audio"
+  "$home/data/media/photos"
+  "$home/data/media/video"
+  "$home/data/projects"
+  "$home/dev"
+  "$home/scratch"
+)
+
+print_plan() {
+  cat <<EOF
+XDG_DESKTOP_DIR=$home/
+XDG_DOWNLOAD_DIR=$home/data/inbox/10-downloads
+XDG_TEMPLATES_DIR=$home/data/templates
+XDG_PUBLICSHARE_DIR=$home/data/shared
+XDG_DOCUMENTS_DIR=$home/data/personal
+XDG_MUSIC_DIR=$home/data/media/audio
+XDG_PICTURES_DIR=$home/data/media/photos
+XDG_VIDEOS_DIR=$home/data/media/video
+XDG_PROJECTS_DIR=$home/data/projects
+
+GTK bookmarks:
+EOF
+  printf '  %s\n' "${bookmark_lines[@]}"
+}
+
+backup_file() {
+  local path="$1"
+  local ts="$2"
+  if [[ -f "$path" ]]; then
+    cp "$path" "$path.bak-$ts"
+  fi
+}
+
+set_projects_dir() {
+  if grep -q '^XDG_PROJECTS_DIR=' "$user_dirs"; then
+    sed -i 's|^XDG_PROJECTS_DIR=.*|XDG_PROJECTS_DIR="$HOME/data/projects"|' "$user_dirs"
+  else
+    printf 'XDG_PROJECTS_DIR="$HOME/data/projects"\n' >> "$user_dirs"
+  fi
+}
+
+write_bookmarks() {
+  local path="$1"
+  mkdir -p "$(dirname "$path")"
+  printf '%s\n' "${bookmark_lines[@]}" > "$path"
+}
+
+if ((apply == 0)); then
+  print_plan
+  printf '\ndry-run only: no files were changed\n'
+  printf 'apply with: %s --apply\n' "$0"
+  exit 0
+fi
+
+if ! command -v xdg-user-dirs-update >/dev/null 2>&1; then
+  printf 'xdg-user-dirs-update is required but was not found\n' >&2
+  exit 1
+fi
+
+mkdir -p "${required_dirs[@]}" "$config_dir"
+
+ts="$(date +%Y%m%d-%H%M%S)"
+backup_file "$user_dirs" "$ts"
+backup_file "$gtk3_bookmarks" "$ts"
+backup_file "$gtk4_bookmarks" "$ts"
+
+xdg-user-dirs-update --set DESKTOP "$home/"
+xdg-user-dirs-update --set DOWNLOAD "$home/data/inbox/10-downloads"
+xdg-user-dirs-update --set TEMPLATES "$home/data/templates"
+xdg-user-dirs-update --set PUBLICSHARE "$home/data/shared"
+xdg-user-dirs-update --set DOCUMENTS "$home/data/personal"
+xdg-user-dirs-update --set MUSIC "$home/data/media/audio"
+xdg-user-dirs-update --set PICTURES "$home/data/media/photos"
+xdg-user-dirs-update --set VIDEOS "$home/data/media/video"
+set_projects_dir
+
+write_bookmarks "$gtk3_bookmarks"
+write_bookmarks "$gtk4_bookmarks"
+
+printf 'Updated XDG user directories and GTK bookmarks for %s\n' "$home"
+printf 'Restart Nautilus with: nautilus -q\n'

@@ -1,0 +1,126 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+home="${HOME:?}"
+
+usage() {
+  printf 'Usage: %s [--home PATH]\n' "$0"
+}
+
+while (($#)); do
+  case "$1" in
+    --home)
+      home="${2:?missing value for --home}"
+      shift 2
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      printf 'Unknown argument: %s\n' "$1" >&2
+      usage >&2
+      exit 2
+      ;;
+  esac
+done
+
+old_pattern="$home/(Documents|Downloads|Pictures|Music|Videos|Desktop|Templates|Public|Documenti|Scaricati|Immagini|Musica|Video|Scrivania|Modelli|Pubblici|Progetti)|\\$HOME/(Documents|Downloads|Pictures|Music|Videos|Desktop|Templates|Public|Documenti|Scaricati|Immagini|Musica|Video|Scrivania|Modelli|Pubblici|Progetti)"
+
+print_header() {
+  printf '\n## %s\n' "$1"
+}
+
+check_xdg() {
+  print_header "XDG user directories"
+  if [[ ! -f "$home/.config/user-dirs.dirs" ]]; then
+    printf 'missing: %s\n' "$home/.config/user-dirs.dirs"
+    return
+  fi
+  sed -n 's/^XDG_/XDG_/p' "$home/.config/user-dirs.dirs"
+  if rg -q "$old_pattern" "$home/.config/user-dirs.dirs"; then
+    printf 'status: stale legacy paths found\n'
+  else
+    printf 'status: no legacy paths found\n'
+  fi
+}
+
+check_bookmarks() {
+  print_header "GTK bookmarks"
+  local found=0
+  for file in "$home/.config/gtk-3.0/bookmarks" "$home/.config/gtk-4.0/bookmarks"; do
+    [[ -f "$file" ]] || continue
+    found=1
+    printf '%s\n' "$file"
+    if rg -q "$old_pattern" "$file"; then
+      printf '  status: stale legacy paths found\n'
+    else
+      printf '  status: no legacy paths found\n'
+    fi
+  done
+  ((found)) || printf 'no GTK bookmark files found\n'
+}
+
+check_configs() {
+  print_header "Application config files with legacy paths"
+  local roots=(
+    "$home/.config"
+    "$home/.local/share"
+    "$home/.var/app"
+    "$home/.mozilla"
+    "$home/.floorp"
+    "$home/.thunderbird"
+  )
+
+  local existing_roots=()
+  for root in "${roots[@]}"; do
+    [[ -d "$root" ]] && existing_roots+=("$root")
+  done
+
+  if ((${#existing_roots[@]} == 0)); then
+    printf 'no config roots found\n'
+    return
+  fi
+
+  find "${existing_roots[@]}" -maxdepth 5 -type f \
+    \( -name '*.conf' -o -name '*.ini' -o -name '*.json' -o -name '*.rc' \
+       -o -name 'prefs.js' -o -name 'user.js' -o -name 'settings.json' \
+       -o -name 'registrymodifications.xcu' \) -print0 2>/dev/null |
+    xargs -0 rg -l "$old_pattern" 2>/dev/null |
+    sort || true
+}
+
+check_darktable_db() {
+  print_header "darktable database"
+  local db="$home/.config/darktable/library.db"
+  if [[ ! -f "$db" ]]; then
+    printf 'not installed or no library database found\n'
+    return
+  fi
+  if ! command -v sqlite3 >/dev/null 2>&1; then
+    printf 'sqlite3 missing; cannot inspect %s\n' "$db"
+    return
+  fi
+  sqlite3 "$db" "select count(*) || ' stale film_rolls under legacy photo roots' from film_rolls where folder like '$home/Pictures%' or folder like '$home/Immagini%';"
+}
+
+check_flatpak() {
+  print_header "Flatpak apps using XDG filesystem portals"
+  if ! command -v flatpak >/dev/null 2>&1; then
+    printf 'flatpak not installed\n'
+    return
+  fi
+  while IFS= read -r app; do
+    perms="$(flatpak info --show-permissions "$app" 2>/dev/null | rg '^filesystems=' || true)"
+    [[ -n "$perms" ]] || continue
+    if [[ "$perms" == *xdg-* || "$perms" == *home* ]]; then
+      printf '%s\t%s\n' "$app" "$perms"
+    fi
+  done < <(flatpak list --app --columns=application 2>/dev/null | sort)
+}
+
+check_xdg
+check_bookmarks
+check_configs
+check_darktable_db
+check_flatpak
