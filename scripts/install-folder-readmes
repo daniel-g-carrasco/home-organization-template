@@ -1,0 +1,380 @@
+#!/usr/bin/env python3
+"""Install concise folder guide files in the template data tree.
+
+Default mode is dry-run. Use --apply to write files.
+Existing unmanaged files are never overwritten.
+"""
+
+from __future__ import annotations
+
+import argparse
+from dataclasses import dataclass
+from pathlib import Path
+
+
+MARKER = "<!-- managed-by: home-organization-template/install-folder-readmes -->"
+FILE_NAME = "00-readme.md"
+
+
+@dataclass(frozen=True)
+class FolderGuide:
+    path: str
+    title: str
+    purpose: str
+    belongs: tuple[str, ...]
+    not_belongs: tuple[str, ...]
+    organize: tuple[str, ...]
+    search: str
+
+
+GUIDES: tuple[FolderGuide, ...] = (
+    FolderGuide(
+        "data",
+        "data",
+        "Canonical home for valuable human-managed files.",
+        (
+            "Personal records, work material, media, libraries, shared files, imports, archives, and templates.",
+            "Files that should be backed up, reviewed, or intentionally retained.",
+        ),
+        (
+            "Source repositories that belong in `~/dev`.",
+            "Temporary or rebuildable work that belongs in `~/scratch`.",
+            "Linux application state such as `.config`, `.local`, and `.cache`.",
+        ),
+        (
+            "Choose the domain first: personal, work, media, library, technology, community, projects, shared, archive, or imports.",
+            "Use inbox only as a temporary landing area.",
+            "Keep imports separate until reviewed.",
+        ),
+        "Search by domain first, then by person, project, institution, device, or date.",
+    ),
+    FolderGuide(
+        "data/inbox",
+        "inbox",
+        "Temporary landing area for files that have not been classified yet.",
+        (
+            "New downloads, scans, mobile imports, and migration conflicts.",
+            "Files whose final domain is not yet clear.",
+        ),
+        (
+            "Long-term archives.",
+            "Finished work.",
+            "Files that already have a clear target folder.",
+        ),
+        (
+            "Review this area regularly.",
+            "Move files into final domains after classification.",
+            "Do not use review folders as permanent storage.",
+        ),
+        "Search here when you remember importing something but not where it was finally moved.",
+    ),
+    FolderGuide(
+        "data/personal",
+        "personal",
+        "Private life records and non-work domains.",
+        (
+            "Personal administration, family and friends, places, finance, health, and private records.",
+            "Files that belong to a person outside professional project context.",
+        ),
+        (
+            "Professional project material.",
+            "Reusable libraries such as books, fonts, software installers, or media collections.",
+            "Temporary imports.",
+        ),
+        (
+            "Use admin for official records and paperwork.",
+            "Use places for homes and physical locations.",
+            "Use people for family and friend related records.",
+        ),
+        "Search by person, institution, place, year, vehicle, or document type.",
+    ),
+    FolderGuide(
+        "data/personal/admin",
+        "personal admin",
+        "Official personal records, contracts, identity documents, taxes, and civic paperwork.",
+        (
+            "Identity, taxes, health, banking, residence, legal, vehicles, telecom, career, education, warranties, and social security.",
+            "Documents that prove something or may be needed for administration.",
+        ),
+        (
+            "Casual notes.",
+            "Work project files.",
+            "Media files unless they are evidence or supporting scans.",
+        ),
+        (
+            "Prefer institution and topic folders over file type folders.",
+            "Use year folders where fiscal or administrative periods matter.",
+            "Keep scans in review until classified.",
+        ),
+        "Search by institution, tax year, document type, account, vehicle, or credential.",
+    ),
+    FolderGuide(
+        "data/work",
+        "work",
+        "Professional, freelance, client, and operational work material.",
+        (
+            "Work administration, client files, project files, professional reference, and work archives.",
+            "Files whose primary meaning is professional activity.",
+        ),
+        (
+            "Personal official records unless linked for convenience.",
+            "Generic technology notes or source repositories.",
+            "Private media libraries.",
+        ),
+        (
+            "Keep administration separate from project execution.",
+            "Use one folder per client or project.",
+            "Archive obsolete work in context.",
+        ),
+        "Search by client, project, fiscal year, job code, or work provider.",
+    ),
+    FolderGuide(
+        "data/media",
+        "media",
+        "Personal media libraries and authored media work.",
+        (
+            "Photos, audio, video, recordings, exports, and media project libraries.",
+            "Files primarily consumed or edited as media.",
+        ),
+        (
+            "Work project evidence unless it belongs inside a work project.",
+            "Software installers and books.",
+            "Temporary render caches.",
+        ),
+        (
+            "Keep originals, exports, and application libraries separate.",
+            "Keep rebuildable caches in `~/scratch`.",
+            "Use event/date folders where date is the natural handle.",
+        ),
+        "Search by event date, album name, app name, camera/source, or project title.",
+    ),
+    FolderGuide(
+        "data/library",
+        "library",
+        "Reusable reference libraries and collections.",
+        (
+            "Books, manuals, fonts, software packages, games, and reusable reference material.",
+            "Material meant to be reused or consulted repeatedly.",
+        ),
+        (
+            "Personal official records.",
+            "Active work project files.",
+            "Temporary downloads.",
+        ),
+        (
+            "Keep app-managed libraries explicit.",
+            "Separate usable assets from archives and license-review material.",
+            "Use topic or collection folders instead of extension folders.",
+        ),
+        "Search by title, author, software name, font family, game system, or manual topic.",
+    ),
+    FolderGuide(
+        "data/technology",
+        "technology",
+        "Technology administration, devices, network, services, servers, and technical reference.",
+        (
+            "Licenses, device notes, network configs, server notes, service records, and reusable technical reference.",
+            "Technology-related documents that are not source repositories.",
+        ),
+        (
+            "Code projects, which belong in `~/dev`.",
+            "Personal official records unless they are device or service documents.",
+            "Temporary diagnostics after they have been processed.",
+        ),
+        (
+            "Separate devices, network, servers, services, and reference.",
+            "Keep scripts under source control when they are maintained code.",
+            "Archive old device or service material in context.",
+        ),
+        "Search by device model, hostname, service name, vendor, serial number, or date.",
+    ),
+    FolderGuide(
+        "data/projects",
+        "projects",
+        "Preserved project artifacts that are not active source repositories.",
+        (
+            "Release artifacts, generated assets, project documentation, and outputs worth keeping.",
+            "Files valuable outside the active repo.",
+        ),
+        (
+            "Active source code repositories, which belong in `~/dev`.",
+            "Build directories and rebuildable artifacts.",
+            "Temporary experiments.",
+        ),
+        (
+            "Use one folder per project.",
+            "Keep release artifacts under release folders.",
+            "Keep rebuildable outputs in `~/scratch` unless they must be preserved.",
+        ),
+        "Search by project name, release date, platform, or artifact name.",
+    ),
+    FolderGuide(
+        "data/shared",
+        "shared",
+        "Files intentionally prepared for other people or publication.",
+        (
+            "Outgoing files, published packages, one-off shared folders, and shared archives.",
+            "Material whose main purpose is transfer or distribution.",
+        ),
+        (
+            "Canonical originals that belong in a domain folder.",
+            "Private records.",
+            "Temporary download staging.",
+        ),
+        (
+            "Keep canonical originals elsewhere and shared copies here only when useful.",
+            "Use recipient, project, or shared date names.",
+            "Move stale shares to archive or remove after confirmation.",
+        ),
+        "Search by recipient, shared date, project, or published item name.",
+    ),
+    FolderGuide(
+        "data/archive",
+        "archive",
+        "Long-term storage for obsolete material that no longer belongs in an active domain.",
+        (
+            "Historical domains, old education material, old work contexts, and retained family or personal archives.",
+            "Material worth keeping but not part of active workflows.",
+        ),
+        (
+            "Current records.",
+            "Unclassified imports.",
+            "Files kept only because deletion has not been reviewed.",
+        ),
+        (
+            "Prefer contextual archives before using the global archive.",
+            "Use this area for whole historical domains or old contexts.",
+            "Keep enough naming context to explain why the material was retained.",
+        ),
+        "Search by old domain, year, organization, course, or person.",
+    ),
+    FolderGuide(
+        "data/imports",
+        "imports",
+        "Historical imports and backup snapshots awaiting review or kept as raw provenance.",
+        (
+            "Old home backups, external disk imports, cloud-drive dumps, and raw migration sources.",
+            "Material that should not be mixed into canonical folders until reviewed.",
+        ),
+        (
+            "Canonical active files.",
+            "Files already classified and moved.",
+            "New everyday downloads.",
+        ),
+        (
+            "Keep each import in its own dated folder.",
+            "Do not reorganize inside imports unless documenting provenance.",
+            "Classify before moving material into canonical domains.",
+        ),
+        "Search by import date, original path, cloud provider, or old folder name.",
+    ),
+    FolderGuide(
+        "data/templates",
+        "templates",
+        "Reusable general templates not owned by a more specific domain.",
+        (
+            "Generic document templates, checklists, and reusable structures.",
+            "Templates that are not specific to a work, personal, or technology domain.",
+        ),
+        (
+            "Domain-specific templates that belong inside that domain.",
+            "Finished documents created from a template.",
+            "Application caches or generated files.",
+        ),
+        (
+            "Prefer domain-local templates when the template only makes sense there.",
+            "Keep general templates named by purpose.",
+            "Document required app or format when it is not obvious.",
+        ),
+        "Search by template purpose, application, or output type.",
+    ),
+)
+
+
+def render(guide: FolderGuide) -> str:
+    lines = [
+        f"# {guide.title}",
+        "",
+        MARKER,
+        "",
+        "## Purpose",
+        "",
+        guide.purpose,
+        "",
+        "## Belongs Here",
+        "",
+    ]
+    lines.extend(f"- {item}" for item in guide.belongs)
+    lines.extend(["", "## Does Not Belong Here", ""])
+    lines.extend(f"- {item}" for item in guide.not_belongs)
+    lines.extend(["", "## How To Organize", ""])
+    lines.extend(f"- {item}" for item in guide.organize)
+    lines.extend(["", "## Search Tips", "", guide.search, ""])
+    return "\n".join(lines)
+
+
+def rel(path: Path, home: Path) -> str:
+    try:
+        return path.relative_to(home).as_posix()
+    except ValueError:
+        return path.as_posix()
+
+
+def install(home: Path, apply: bool, update_managed: bool) -> int:
+    created = 0
+    updated = 0
+    unchanged = 0
+    skipped = 0
+
+    for guide in GUIDES:
+        folder = home / guide.path
+        path = folder / FILE_NAME
+        content = render(guide)
+
+        if path.exists():
+            existing = path.read_text(encoding="utf-8")
+            if existing == content:
+                unchanged += 1
+                continue
+            if MARKER in existing and update_managed:
+                print(f"UPDATE {rel(path, home)}")
+                updated += 1
+                if apply:
+                    path.write_text(content, encoding="utf-8")
+                continue
+            print(f"SKIP existing unmanaged or locally edited file: {rel(path, home)}")
+            skipped += 1
+            continue
+
+        print(f"CREATE {rel(path, home)}")
+        created += 1
+        if apply:
+            folder.mkdir(parents=True, exist_ok=True)
+            path.write_text(content, encoding="utf-8")
+
+    mode = "applied" if apply else "dry-run"
+    print(
+        f"{mode}: {created} created, {updated} updated, "
+        f"{unchanged} unchanged, {skipped} skipped"
+    )
+    if not apply:
+        print("apply with: scripts/install-folder-readmes --apply")
+    return 0
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--home", default=str(Path.home()))
+    parser.add_argument("--apply", action="store_true")
+    parser.add_argument(
+        "--update-managed",
+        action="store_true",
+        help="update existing files only when they contain this script's management marker",
+    )
+    args = parser.parse_args()
+
+    return install(Path(args.home).expanduser().resolve(), args.apply, args.update_managed)
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

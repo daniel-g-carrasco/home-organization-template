@@ -1,0 +1,36 @@
+# Backup exclusion example
+#
+# Adapt syntax to your backup tool.
+
+# Temporary work
+/scratch/
+
+# Historical imports pending review
+/data/imports/
+
+# Large local media that may need a separate backup strategy
+/data/media/photos/raw/
+/data/media/video/projects/*/cache/
+
+# Plain-text secrets should move to a password manager or encrypted vault
+/data/technology/00-admin/security/
+/data/technology/00-admin/licenses/raw-secrets/
+
+# Sync trash and caches
+**/SyncTrash/
+**/.cache/
+/.cache/
+
+# Development artifacts
+/dev/**/node_modules/
+/dev/**/.venv/
+/dev/**/target/
+/dev/**/build/
+/dev/**/dist/
+/dev/**/.next/
+
+# Package/tool caches
+/.npm/
+/.cargo/registry/
+/.gradle/caches/
+/.rustup/toolchains/

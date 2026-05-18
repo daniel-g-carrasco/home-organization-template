@@ -1,0 +1,118 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+home="${HOME:?}"
+dry_run=0
+
+usage() {
+  printf 'Usage: %s [--home PATH] [--dry-run]\n' "$0"
+}
+
+while (($#)); do
+  case "$1" in
+    --home)
+      home="${2:?missing value for --home}"
+      shift 2
+      ;;
+    --dry-run)
+      dry_run=1
+      shift
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      printf 'Unknown argument: %s\n' "$1" >&2
+      usage >&2
+      exit 2
+      ;;
+  esac
+done
+
+dirs=(
+  "$home/data/inbox/00-review"
+  "$home/data/inbox/10-downloads"
+  "$home/data/inbox/20-scans"
+  "$home/data/inbox/30-mobile-imports"
+  "$home/data/inbox/99-migration-conflicts"
+  "$home/data/personal/admin/identity"
+  "$home/data/personal/admin/taxes"
+  "$home/data/personal/admin/health"
+  "$home/data/personal/admin/residence"
+  "$home/data/personal/admin/legal"
+  "$home/data/personal/admin/social-security"
+  "$home/data/personal/admin/insurance"
+  "$home/data/personal/admin/vehicles"
+  "$home/data/personal/admin/banking"
+  "$home/data/personal/admin/telecom"
+  "$home/data/personal/admin/transport"
+  "$home/data/personal/admin/travel"
+  "$home/data/personal/admin/career"
+  "$home/data/personal/admin/education"
+  "$home/data/personal/admin/warranties"
+  "$home/data/personal/admin/purchases"
+  "$home/data/personal/admin/scans"
+  "$home/data/personal/finance"
+  "$home/data/personal/health-fitness"
+  "$home/data/personal/people/family"
+  "$home/data/personal/people/friends"
+  "$home/data/personal/places"
+  "$home/data/personal/records"
+  "$home/data/work/admin"
+  "$home/data/work/clients"
+  "$home/data/work/projects"
+  "$home/data/work/reference"
+  "$home/data/work/archive"
+  "$home/data/community"
+  "$home/data/media/photos/raw"
+  "$home/data/media/photos/albums"
+  "$home/data/media/photos/exports"
+  "$home/data/media/photos/camera-roll"
+  "$home/data/media/audio/music-projects"
+  "$home/data/media/video/projects"
+  "$home/data/media/video/exports"
+  "$home/data/media/recordings"
+  "$home/data/library/books/managed-library"
+  "$home/data/library/books/inbox"
+  "$home/data/library/books/manuals"
+  "$home/data/library/books/periodicals"
+  "$home/data/library/fonts/families"
+  "$home/data/library/fonts/archives"
+  "$home/data/library/fonts/license-review"
+  "$home/data/library/software/installers"
+  "$home/data/library/software/packages"
+  "$home/data/library/games"
+  "$home/data/technology/00-admin/licenses/proof-of-purchase"
+  "$home/data/technology/00-admin/licenses/raw-secrets"
+  "$home/data/technology/00-admin/security"
+  "$home/data/technology/10-devices"
+  "$home/data/technology/20-network"
+  "$home/data/technology/30-servers"
+  "$home/data/technology/40-services"
+  "$home/data/technology/50-reference"
+  "$home/data/technology/90-archive"
+  "$home/data/projects"
+  "$home/data/shared/10-outgoing"
+  "$home/data/shared/20-published"
+  "$home/data/shared/90-archive"
+  "$home/data/archive/personal"
+  "$home/data/archive/work"
+  "$home/data/archive/education"
+  "$home/data/archive/family"
+  "$home/data/imports"
+  "$home/data/templates"
+  "$home/dev/project-repositories"
+  "$home/scratch/downloads"
+  "$home/scratch/mobile/phone"
+  "$home/scratch/mobile/tablet"
+  "$home/scratch/media-cache"
+)
+
+if ((dry_run)); then
+  printf '%s\n' "${dirs[@]}"
+  printf 'dry-run: %d directories would be created or verified under %s\n' "${#dirs[@]}" "$home"
+else
+  mkdir -p "${dirs[@]}"
+  printf 'Created or verified %d directories under %s\n' "${#dirs[@]}" "$home"
+fi
