@@ -7,8 +7,17 @@ This is useful when a structured home layout has important roots such as
 ## Model
 
 `scripts/configure-folder-icons` does not generate artwork. It resolves existing
-`folder-*` icons from the active icon theme, then from inherited themes and
-fallback themes such as `Adwaita-yellow`, `MoreWaita`, and `Adwaita`.
+`folder-*` icons from installed icon themes.
+
+The managed home layout prefers `Adwaita-yellow` scalable SVG folder icons
+before the active icon theme. If a semantic icon is not available in
+`Adwaita-yellow`, the resolver falls back to the generic yellow `folder.svg`
+before trying blue-prone fallback themes such as `MoreWaita`, `Adwaita`, and
+`hicolor`.
+
+The script does not pin PNG folder icons into GIO metadata. Nautilus icon view
+can upscale small raster folders poorly, so managed folder metadata should point
+to scalable SVG assets.
 
 It assigns the resolved icon files with:
 

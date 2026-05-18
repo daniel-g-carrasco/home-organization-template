@@ -68,6 +68,10 @@ theme_roots=(
   "/usr/share/icons"
 )
 
+preferred_folder_themes=(
+  "Adwaita-yellow"
+)
+
 theme_dir() {
   local name="$1"
   local root
@@ -115,8 +119,8 @@ add_theme_tree() {
 }
 
 active_theme="$(current_icon_theme)"
-add_theme_tree "$active_theme"
 add_theme_tree "Adwaita-yellow"
+add_theme_tree "$active_theme"
 add_theme_tree "MoreWaita"
 add_theme_tree "Adwaita"
 add_theme_tree "AdwaitaLegacy"
@@ -137,13 +141,42 @@ icon_dirs=(
   "symbolic/places"
 )
 
-icon_exts=("svg" "png")
+icon_exts=("svg")
 
 resolve_icon() {
   local candidates_csv="$1"
   local candidate candidates theme_name root icon_dir ext path
 
   IFS=',' read -r -a candidates <<< "$candidates_csv"
+
+  for candidate in "${candidates[@]}"; do
+    candidate="$(trim "$candidate")"
+    [[ -n "$candidate" ]] || continue
+
+    for theme_name in "${preferred_folder_themes[@]}"; do
+      for root in "${theme_roots[@]}"; do
+        for icon_dir in "${icon_dirs[@]}"; do
+          path="$root/$theme_name/$icon_dir/$candidate.svg"
+          if [[ -e "$path" ]]; then
+            printf '%s\n' "$path"
+            return 0
+          fi
+        done
+      done
+    done
+  done
+
+  for theme_name in "${preferred_folder_themes[@]}"; do
+    for root in "${theme_roots[@]}"; do
+      for icon_dir in "${icon_dirs[@]}"; do
+        path="$root/$theme_name/$icon_dir/folder.svg"
+        if [[ -e "$path" ]]; then
+          printf '%s\n' "$path"
+          return 0
+        fi
+      done
+    done
+  done
 
   for candidate in "${candidates[@]}"; do
     candidate="$(trim "$candidate")"
