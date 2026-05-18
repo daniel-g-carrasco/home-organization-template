@@ -67,8 +67,8 @@ scripts/audit-application-paths
 - `docs/backup-policy.md`: backup and sync boundaries.
 - `docs/application-paths.md`: XDG, file-manager, browser, mail, media, and
   app-specific path integration.
-- `docs/folder-icons.md`: custom Nautilus/GIO folder icons for the organized
-  home layout.
+- `docs/folder-icons.md`: Nautilus/GIO folder icons resolved from the active
+  icon theme for the organized home layout.
 - `policies/backup-exclude.example`: example exclusion file for backup tools.
 - `policies/naming.md`: naming conventions.
 - `templates/folder-readme.md`: template for folder-local guide files.
@@ -78,8 +78,8 @@ scripts/audit-application-paths
   bookmarks to the organized layout.
 - `scripts/audit-application-paths`: reports application config files that
   still reference old home paths.
-- `scripts/configure-folder-icons`: generates and assigns local SVG folder
-  icons for the primary organized folders.
+- `scripts/configure-folder-icons`: assigns theme-provided folder icons to the
+  primary organized folders.
 
 ## Safety Rule
 

@@ -6,16 +6,14 @@ This is useful when a structured home layout has important roots such as
 
 ## Model
 
-`scripts/configure-folder-icons` generates local SVG folder icons under:
+`scripts/configure-folder-icons` does not generate artwork. It resolves existing
+`folder-*` icons from the active icon theme, then from inherited themes and
+fallback themes such as `MoreWaita` and `Adwaita`.
 
-```text
-~/.local/share/icons/home-organization/
-```
-
-Then it assigns them with:
+It assigns the resolved icon files with:
 
 ```bash
-gio set -t string <folder> metadata::custom-icon file:///path/to/icon.svg
+gio set -t string <folder> metadata::custom-icon file:///path/to/theme-icon.svg
 ```
 
 The script covers:
@@ -52,6 +50,12 @@ Apply:
 scripts/configure-folder-icons --apply
 ```
 
+Apply with an explicit theme:
+
+```bash
+scripts/configure-folder-icons --theme MoreWaita --apply
+```
+
 Clear custom icons:
 
 ```bash
@@ -60,7 +64,10 @@ scripts/configure-folder-icons --clear --apply
 
 ## Notes
 
-- Icons are local SVG files, so they do not depend on the active icon theme.
+- Icons come from the active theme when possible, so the folder shape and symbol
+  style remain coherent with the desktop.
+- `metadata::custom-icon-name` is not accepted by `gio` on this system, so the
+  script stores a file URI to the resolved theme icon.
 - Nautilus may need to be reopened after metadata changes.
 - GIO metadata is per-user state; this is why the script exists instead of
   relying only on files committed to the repository.
