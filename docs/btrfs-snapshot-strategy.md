@@ -45,35 +45,48 @@ value boundary.
 
 ## Subvolume layout
 
-A typical Btrfs layout that matches the three-root model:
+A typical Btrfs layout that matches the three-root model.
+
+Top-level subvolume names vary by distribution: Anaconda on Fedora creates
+`root`, `home`, `var` (no prefix); Arch and openSUSE installers commonly use
+the `@root`, `@home` convention. The example below uses the Fedora style;
+substitute `@root`/`@home` if your installer follows that convention. Nested
+subvolumes have no separate name — they are identified by their path inside
+the parent subvolume.
 
 ```
 Btrfs pool
-├── @root                       → /                          (OS-managed)
-├── @home                       → /home (or /var/home)       ← snapshot target
-│   ├── (nested) @home_cache    → ~/.cache                   excluded
-│   ├── (nested) @home_dev      → ~/dev                      excluded
-│   └── (nested) @home_scratch  → ~/scratch                  excluded
-└── @data                       → ~/data                     independent
+├── root                                → /                          (OS-managed)
+├── home                                → /home (or /var/home)       ← snapshot target
+│   ├── (nested) home/<user>/.cache     → ~/.cache                   excluded
+│   ├── (nested) home/<user>/dev        → ~/dev                      excluded
+│   └── (nested) home/<user>/scratch    → ~/scratch                  excluded
+└── @data                               → ~/data                     independent
 ```
+
+In `btrfs subvolume list /sysroot` (or `btrfs subvolume list <btrfs-mount>`)
+the nested entries appear with `top level N`, where N is the ID of the
+parent `home` subvolume. That `top level` relation is what makes Btrfs
+automatically exclude them from snapshots of the parent.
 
 Mapping to the value categories:
 
 | Subvolume | Snapshot intent | Reason |
 |---|---|---|
-| `@home` | primary snapshot target | dotfiles, `.config`, `.local`, credentials, browser profiles |
-| `@home_cache` | none | regenerable; tens of GiB of constant churn |
-| `@home_dev` | none | git remote is the source of truth |
-| `@home_scratch` | none | disposable by contract |
+| `home` | primary snapshot target | dotfiles, `.config`, `.local`, credentials, browser profiles |
+| `home/<user>/.cache` (nested) | none | regenerable; tens of GiB of constant churn |
+| `home/<user>/dev` (nested) | none | git remote is the source of truth |
+| `home/<user>/scratch` (nested) | none | disposable by contract |
 | `@data` | own policy | covered by external backup; can be snapshotted independently if desired |
-| `@root` | never | OS rollback is the responsibility of the OS update mechanism, not Btrfs snapshots |
+| `root` | never | OS rollback is the responsibility of the OS update mechanism, not Btrfs snapshots |
 
 The user-visible paths remain unchanged. Applications see `~/.cache`,
 `~/dev`, `~/scratch`, and `~/data` as ordinary directories.
 
 ## Creating the layout post-install
 
-The installer of most distributions creates `@root` and `@home` but not the
+The installer of most distributions creates the top-level `root` and `home`
+subvolumes (under whatever naming convention the installer uses) but not the
 nested subvolumes or `@data`. Create them after first boot, ideally before
 populating the affected paths.
 
@@ -102,7 +115,7 @@ Add an `/etc/fstab` entry to mount it at `~/data`:
 UUID=<btrfs-uuid>  /home/<user>/data  btrfs  subvol=@data,compress=zstd:1,relatime  0 0
 ```
 
-### Create the nested subvolumes inside @home
+### Create the nested subvolumes inside `home`
 
 Nested subvolumes are created as paths inside the parent's normal mount
 point. They use the same Btrfs pool but are tracked independently and are
@@ -130,7 +143,7 @@ of the parent.
 ### Verify
 
 ```bash
-sudo btrfs subvolume list /
+sudo btrfs subvolume list /sysroot   # or /home — never / on composefs overlays
 findmnt /home/<user>/.cache
 findmnt /home/<user>/dev
 findmnt /home/<user>/scratch
@@ -138,7 +151,7 @@ findmnt /home/<user>/data
 ```
 
 The `btrfs subvolume list` output should show the nested subvolumes with
-`top level` equal to the ID of `@home`.
+`top level` equal to the ID of `home`.
 
 ## Taking and restoring snapshots
 
@@ -168,11 +181,11 @@ others.
 
 | Layer | Tool | Scope | Protects against |
 |---|---|---|---|
-| OS rollback | distro-specific (rpm-ostree, Snapper for `@root`, etc.) | `@root` | bad system update |
-| Dotfile snapshots | Btrfs snapshot of `@home` | dotfiles + app state | bad config change, bad app upgrade |
+| OS rollback | distro-specific (rpm-ostree, Snapper, etc.) | `root` | bad system update |
+| Dotfile snapshots | Btrfs snapshot of `home` | dotfiles + app state | bad config change, bad app upgrade |
 | Personal data backup | external (cloud or NAS) | `@data` | disk failure, theft, ransomware |
-| Code | git remote | `@home_dev` content | local disk loss |
-| Caches | none | `@home_cache` | nothing — regenerable |
+| Code | git remote | `home/<user>/dev` content | local disk loss |
+| Caches | none | `home/<user>/.cache` | nothing — regenerable |
 
 A bad system update is recovered by the OS update tool. A botched dotfile
 change is recovered from a Btrfs snapshot. A lost disk is recovered from
