@@ -69,6 +69,8 @@ scripts/audit-application-paths
   app-specific path integration.
 - `docs/folder-icons.md`: Nautilus/GIO folder icons resolved from the active
   icon theme for the organized home layout.
+- `docs/btrfs-snapshot-strategy.md`: optional Btrfs subvolume layout that
+  aligns the three-root model with snapshot scope (Btrfs-only).
 - `policies/backup-exclude.example`: example exclusion file for backup tools.
 - `policies/naming.md`: naming conventions.
 - `templates/folder-readme.md`: template for folder-local guide files.
