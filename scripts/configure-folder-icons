@@ -258,7 +258,7 @@ icon_targets=(
   "scratch|folder-temp,folder|$home/scratch"
 
   "inbox-review|folder-drag-accept,folder-documents,folder|$home/data/inbox/00-review"
-  "inbox-downloads|folder-download,folder|$home/data/inbox/10-downloads"
+  "inbox-downloads|folder-download,folder|$home/scratch/downloads"
   "inbox-scans|folder-documents,folder|$home/data/inbox/20-scans"
   "inbox-mobile-imports|folder-android,folder-download,folder|$home/data/inbox/30-mobile-imports"
   "inbox-conflicts|folder-temp,folder|$home/data/inbox/99-migration-conflicts"

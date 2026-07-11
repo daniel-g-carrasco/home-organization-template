@@ -32,7 +32,7 @@ done
 
 dirs=(
   "$home/data/inbox/00-review"
-  "$home/data/inbox/10-downloads"
+  "$home/scratch/downloads"
   "$home/data/inbox/20-scans"
   "$home/data/inbox/30-mobile-imports"
   "$home/data/inbox/99-migration-conflicts"

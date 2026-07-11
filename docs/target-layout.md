@@ -6,7 +6,6 @@ All folder names are lowercase, English, and script-friendly.
 ~/data/
   inbox/
     00-review/
-    10-downloads/
     20-scans/
     30-mobile-imports/
     99-migration-conflicts/
@@ -110,7 +109,7 @@ All folder names are lowercase, English, and script-friendly.
 Suggested mapping:
 
 ```text
-XDG_DOWNLOAD_DIR     -> ~/data/inbox/10-downloads
+XDG_DOWNLOAD_DIR     -> ~/scratch/downloads
 XDG_DOCUMENTS_DIR    -> ~/data/personal
 XDG_PICTURES_DIR     -> ~/data/media/photos
 XDG_MUSIC_DIR        -> ~/data/media/audio
