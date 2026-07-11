@@ -26,7 +26,7 @@ scripts/audit-application-paths
 The expected mapping is:
 
 ```text
-Downloads -> ~/data/inbox/10-downloads
+Downloads -> ~/scratch/downloads
 Documents -> ~/data/personal
 Pictures  -> ~/data/media/photos
 Music     -> ~/data/media/audio
@@ -48,8 +48,8 @@ Example:
 
 ```js
 user_pref("browser.download.folderList", 2);
-user_pref("browser.download.dir", "/home/USER/data/inbox/10-downloads");
-user_pref("browser.download.lastDir", "/home/USER/data/inbox/10-downloads");
+user_pref("browser.download.dir", "/home/USER/scratch/downloads");
+user_pref("browser.download.lastDir", "/home/USER/scratch/downloads");
 ```
 
 Chromium-based browsers can usually be changed from:
@@ -58,7 +58,7 @@ Chromium-based browsers can usually be changed from:
 Settings -> Downloads -> Location
 ```
 
-Use `~/data/inbox/10-downloads` as the default. Enable "Ask where to save each
+Use `~/scratch/downloads` as the default. Enable "Ask where to save each
 file" only if downloads are often domain-specific.
 
 ## Mail Clients
@@ -68,8 +68,8 @@ Mail clients often have a separate "save attachment" directory.
 For Thunderbird-style clients:
 
 ```js
-user_pref("messenger.save.dir", "/home/USER/data/inbox/10-downloads");
-user_pref("browser.download.dir", "/home/USER/data/inbox/10-downloads");
+user_pref("messenger.save.dir", "/home/USER/scratch/downloads");
+user_pref("browser.download.dir", "/home/USER/scratch/downloads");
 ```
 
 ## Photo And Media Applications
@@ -98,7 +98,7 @@ recent files can still point to old locations until cleared.
 Download clients should distinguish complete and incomplete files:
 
 ```text
-complete downloads   -> ~/data/inbox/10-downloads
+complete downloads   -> ~/scratch/downloads
 incomplete downloads -> ~/scratch/downloads
 ```
 
