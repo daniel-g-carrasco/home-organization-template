@@ -47,7 +47,7 @@ The script covers:
 
 It also covers stable second-level folders where the theme has a clear matching
 symbol: downloads, scans, finance, places, media types, books, games, software,
-technology subdomains, shared workflow folders, and archives. It intentionally
+travel, technology subdomains, shared workflow folders, and archives. It intentionally
 does not assign icons to date/event folders or individual project folders.
 
 The root `~/data` intentionally uses the earth folder icon from the active

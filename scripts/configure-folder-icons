@@ -285,6 +285,7 @@ icon_targets=(
   "library-fonts|folder-documents,folder|$home/data/library/fonts"
   "library-games|folder-games,folder|$home/data/library/games"
   "library-software|folder-appimage,folder-flatpak,folder|$home/data/library/software"
+  "library-travel|folder-maps,folder-map,folder-documents,folder|$home/data/library/travel"
 
   "technology-admin|folder-documents,folder-private,folder|$home/data/technology/00-admin"
   "technology-devices|folder-android,folder|$home/data/technology/10-devices"

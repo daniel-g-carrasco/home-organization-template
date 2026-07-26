@@ -68,6 +68,7 @@ All folder names are lowercase, English, and script-friendly.
       installers/
       packages/
     games/
+    travel/
   technology/
     00-admin/
       licenses/

@@ -83,6 +83,7 @@ dirs=(
   "$home/data/library/software/installers"
   "$home/data/library/software/packages"
   "$home/data/library/games"
+  "$home/data/library/travel"
   "$home/data/technology/00-admin/licenses/proof-of-purchase"
   "$home/data/technology/00-admin/licenses/raw-secrets"
   "$home/data/technology/00-admin/security"

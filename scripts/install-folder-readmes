@@ -153,7 +153,7 @@ GUIDES: tuple[FolderGuide, ...] = (
         "library",
         "Reusable reference libraries and collections.",
         (
-            "Books, manuals, fonts, software packages, games, and reusable reference material.",
+            "Books, manuals, fonts, software packages, games, travel maps/guides, and reusable reference material.",
             "Material meant to be reused or consulted repeatedly.",
         ),
         (
